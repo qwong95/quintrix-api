@@ -1,0 +1,12 @@
+## DB Config ##
+db:
+  host: "training4quintrix.clfl8y3ktaxf.us-west-2.rds.amazonaws.com"
+  port: "3306"
+  user: "REDACTED"
+  password: "REDACTED"
+  database: "training_qw"
+
+## HTTP properties ##
+http:
+  host: "0.0.0.0"
+  port: "8081"
