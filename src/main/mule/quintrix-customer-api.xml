@@ -154,6 +154,7 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0c95de0e-2639-44a4-80d4-f1042d9abb8e" message="Customer deleted"/>
     </flow>
     <flow name="getAllCustomers_Flow">
         <logger level="INFO" doc:name="Logger" doc:id="fa8fdf6c-c1ba-4222-81b2-16eeebb72140" message="Get all customers"/>
@@ -175,6 +176,7 @@ payload map  {
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f2a74f88-a860-4d1e-ad56-b6c17d1d7dee" message="All customers received"/>
     </flow>
     <flow name="getOneCustomer_Flow">
 		<logger level="INFO" doc:name="Logger" doc:id="40fb6b0e-5123-4fcb-8249-866feb86a9d7" message="Get one customer" />
@@ -200,6 +202,7 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3256839f-a7b0-47ef-9204-7e4c0c11f8f4" message="Customer obtained"/>
     </flow>
     <flow name="insertCustomers_Flow">
 		<logger level="INFO" doc:name="Logger" doc:id="889bb41c-42cf-46f3-b28b-17c08ef11bff" message="Inserting customers"/>
@@ -224,5 +227,6 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="faeeb3a8-83ce-4694-8019-d2e537e242d8" message="All customers inserted"/>
     </flow>
 </mule>
