@@ -11,7 +11,7 @@
             <apikit:flow-mapping resource="/customers/{customerId}" action="delete" flow-ref="deleteOneCustomer_Flow" />
         </apikit:flow-mappings>
     </apikit:config>
-    <configuration-properties doc:name="Configuration properties" doc:id="e1139d69-54f2-425c-a30b-cd93b084bc29" file="conf-props/${env}.yaml" />
+    <configuration-properties doc:name="Configuration properties" doc:id="e1139d69-54f2-425c-a30b-cd93b084bc29" file="customer-api-${env}.yaml" />
     <db:config name="Database_Config" doc:name="Database Config" doc:id="c9d2c4c1-9335-4f1b-9dd5-921f38c4ae43">
         <db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
     </db:config>
