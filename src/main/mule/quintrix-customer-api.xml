@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
     <http:listener-config name="api-httpListenerConfig">
         <http:listener-connection host="${http.host}" port="${http.port}" />
     </http:listener-config>
-    <apikit:config name="api-config" raml="api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" >
-		<apikit:flow-mappings >
-			<apikit:flow-mapping resource="/customers" action="get" flow-ref="getAllCustomers_Flow" />
-			<apikit:flow-mapping resource="/customers/{customerId}" action="get" flow-ref="getOneCustomer_Flow" />
-			<apikit:flow-mapping resource="/customers" action="post" flow-ref="insertCustomers_Flow" />
-			<apikit:flow-mapping resource="/customers/{customerId}" action="delete" flow-ref="deleteOneCustomer_Flow" />
-		</apikit:flow-mappings>
-	</apikit:config>
-    <configuration-properties doc:name="Configuration properties" doc:id="44701d27-33a1-4183-a91d-9f2a260ae2f9" file="conf-props/${env}.yaml" />
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="ad6bb289-4379-442b-b7d8-c2bac22c1d26" >
-		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
-	</db:config>
-	<flow name="api-main">
-        <http:listener config-ref="api-httpListenerConfig" path="/api/*" outputMimeType="application/json" doc:id="85392df3-9ea1-49db-993b-8169cf7b38cb">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-            </http:response>
+    <apikit:config name="api-config" raml="api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
+        <apikit:flow-mappings>
+            <apikit:flow-mapping resource="/customers" action="get" flow-ref="getAllCustomers_Flow" />
+            <apikit:flow-mapping resource="/customers/{customerId}" action="get" flow-ref="getOneCustomer_Flow" />
+            <apikit:flow-mapping resource="/customers" action="post" flow-ref="insertCustomers_Flow" />
+            <apikit:flow-mapping resource="/customers/{customerId}" action="delete" flow-ref="deleteOneCustomer_Flow" />
+        </apikit:flow-mappings>
+    </apikit:config>
+    <configuration-properties doc:name="Configuration properties" doc:id="e1139d69-54f2-425c-a30b-cd93b084bc29" file="conf-props/${env}.yaml" />
+    <db:config name="Database_Config" doc:name="Database Config" doc:id="c9d2c4c1-9335-4f1b-9dd5-921f38c4ae43">
+        <db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
+    </db:config>
+    <flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="/api/*" outputMimeType="application/json" doc:id="34e9e740-d685-4ede-a4f8-0b0786b85f22">
+            <http:response statusCode="#[vars.httpStatus default 200]" />
             <http:error-response statusCode="#[vars.httpStatus default 500]">
                 <http:body><![CDATA[#[payload]]]></http:body>
             </http:error-response>
         </http:listener>
-        <logger level="INFO" doc:name="Logger" doc:id="b09aaa5a-2b20-43ea-8f93-64225a91e65b" message="URI: #[attributes.requestUri]"/>
-		<apikit:router config-ref="api-config" />
+        <logger level="INFO" doc:name="Logger" doc:id="af532ee1-b8ad-450a-9ec2-8b803cf2fbde" message="URI: #[attributes.requestUri]" />
+        <apikit:router config-ref="api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -42,7 +39,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -55,7 +52,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -68,7 +65,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -81,7 +78,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -94,7 +91,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -121,7 +118,7 @@ output application/json
         <apikit:console config-ref="api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -135,33 +132,31 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="deleteSingleCustomer_Flow">
-		<logger level="INFO" doc:name="Logger" doc:id="a63ba0dc-9402-415e-a43e-f35a491fd12b" message="Delete one customer"/>
-		<db:delete doc:name="Delete" doc:id="cd4b72d4-164a-4871-b09c-312017a1ec0e" config-ref="Database_Config">
-			<db:sql >DELETE FROM ${db.database}.customer WHERE customer_id = :id;</db:sql>
-			<db:input-parameters ><![CDATA[#[{
+    <flow name="deleteOneCustomer_Flow">
+        <logger level="INFO" doc:name="Logger" doc:id="2f8303f7-3771-4348-947e-2eff6cedf2cc" message="Delete one customer" />
+        <db:delete doc:name="Delete" doc:id="ee647829-6bc5-49a3-b8f4-3ebb6b4c046f" config-ref="Database_Config">
+            <db:sql>DELETE FROM ${db.database}.customer WHERE customer_id = :id;</db:sql>
+            <db:input-parameters><![CDATA[#[{
     id: attributes.uriParams.customerId
-}]
-]]></db:input-parameters>
-		</db:delete>
-		<ee:transform doc:name="Transform Message" doc:id="1a08fba1-11ed-40fb-bae9-c988b209cb11" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+}]]]></db:input-parameters>
+        </db:delete>
+        <ee:transform doc:name="Transform Message" doc:id="daba63f2-9879-47ba-b2fa-5c1ca930fc08" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-    message: "Deleted."
+    message: "Deleted " ++ payload as String ++ " row(s)."
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="0c95de0e-2639-44a4-80d4-f1042d9abb8e" message="Customer deleted"/>
+            </ee:message>
+        </ee:transform>
     </flow>
     <flow name="getAllCustomers_Flow">
-        <logger level="INFO" doc:name="Logger" doc:id="fa8fdf6c-c1ba-4222-81b2-16eeebb72140" message="Get all customers"/>
-		<db:select doc:name="Select" doc:id="2efd7119-4bb1-407f-afb1-26a0ed9e8780" config-ref="Database_Config">
-			<db:sql >SELECT * FROM ${db.database}.customer;</db:sql>
-		</db:select>
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="d8300d92-2586-4c3a-bcf5-3844bc4c8d0b">
+        <logger level="INFO" doc:name="Logger" doc:id="66d666e2-36ae-4d8d-976d-d78c0eacdadd" message="Get all customers" />
+        <db:select doc:name="Select" doc:id="14042631-f555-4abd-a92f-5cc47e4285f5" config-ref="Database_Config">
+            <db:sql>SELECT * FROM ${db.database}.customer;</db:sql>
+        </db:select>
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="2b8b2be2-6531-401e-9ca6-c5184b444fb6">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -176,20 +171,18 @@ payload map  {
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="f2a74f88-a860-4d1e-ad56-b6c17d1d7dee" message="All customers received"/>
     </flow>
     <flow name="getOneCustomer_Flow">
-		<logger level="INFO" doc:name="Logger" doc:id="40fb6b0e-5123-4fcb-8249-866feb86a9d7" message="Get one customer" />
-		<db:select doc:name="Select" doc:id="d1cda9c3-ba27-4444-9b03-da9661894e80" config-ref="Database_Config" >
-			<db:sql >SELECT * FROM ${db.database}.customer WHERE customer_id = :id;</db:sql>
-			<db:input-parameters ><![CDATA[#[{
+        <logger level="INFO" doc:name="Logger" doc:id="62609913-4833-4ff3-80d4-19fb61212901" message="Get one customer" />
+        <db:select doc:name="Select" doc:id="b134241f-e10a-422d-a3b6-33cba98612ab" config-ref="Database_Config">
+            <db:sql>SELECT * FROM ${db.database}.customer WHERE customer_id = :id;</db:sql>
+            <db:input-parameters><![CDATA[#[{
     id: attributes.uriParams.customerId
-}]
-]]></db:input-parameters>
-		</db:select>
-		<ee:transform doc:name="Transform Message" doc:id="28c02214-8a4c-4b6e-9bf9-8baebec67f52" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+}]]]></db:input-parameters>
+        </db:select>
+        <ee:transform doc:name="Transform Message" doc:id="db25af52-a18f-4170-9888-ae1a27eb4faf" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -200,23 +193,27 @@ output application/json
     emailId: payload[0].customer_emailId,
     SSN: payload[0].customer_SSN
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="3256839f-a7b0-47ef-9204-7e4c0c11f8f4" message="Customer obtained"/>
+            </ee:message>
+        </ee:transform>
     </flow>
     <flow name="insertCustomers_Flow">
-		<logger level="INFO" doc:name="Logger" doc:id="889bb41c-42cf-46f3-b28b-17c08ef11bff" message="Inserting customers"/>
-		<foreach doc:name="For Each" doc:id="1c054236-84a0-4075-8a1e-f76ca673aa21" >
-			<db:insert doc:name="Insert" doc:id="38f0d0f7-28c3-4c09-93dd-c52a4d136341" config-ref="Database_Config">
-				<db:sql >SELECT * FROM ${db.database}.customer;</db:sql>
-			</db:insert>
-		</foreach>
-		<ee:transform doc:name="Transform Message" doc:id="39d80c91-76ed-4722-b0a4-599ff54d1228" xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
-http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+        <logger level="INFO" doc:name="Logger" doc:id="915a6e77-04f1-459d-acd3-16d174829580" message="Inserting customers" />
+        <db:bulk-insert doc:name="Bulk insert" doc:id="7ff4ab05-514b-41fe-8b6e-9477e675eff1" config-ref="Database_Config">
+            <db:bulk-input-parameters><![CDATA[#[payload map {
+    id: $.customerId,
+    lastName: $.lastName,
+    firstName: $.firstName,
+    phoneNumber: $.phoneNumber,
+    emailId: $.emailId,
+    ssn: $.SSN
+}]]]></db:bulk-input-parameters>
+            <db:sql>INSERT INTO training_mc.customer ( customer_id, customer_lastName, customer_firstName,customer_phoneNumber,customer_emailId,customer_SSN )
+   VALUES
+   ( :id, :lastName, :firstName, :phoneNumber, :emailId, :ssn);</db:sql>
+        </db:bulk-insert>
+        <ee:transform doc:name="Transform Message" doc:id="60531074-0689-4a43-a06b-031c9e10f2ad" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -225,8 +222,117 @@ output application/json
              ++ (payload reduce ($$ + $) default 0) as String
              ++ " rows."
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="faeeb3a8-83ce-4694-8019-d2e537e242d8" message="All customers inserted"/>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="delete:\customers\(customerId):api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="customerId">attributes.uriParams.customerId</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  affectedRow: 1,
+  status: "Successfully deleted"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\customers:api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    customerId: 1000,
+    firstName: "Gopichand",
+    lastName: "Karnati",
+    phoneNumber: "2037894654",
+    emailId: "gopik0173@gmail.com",
+    SSN: "123-45-6789",
+    country: "US"
+  }, 
+  {
+    customerId: 2000,
+    firstName: "asdf",
+    lastName: "fghj",
+    phoneNumber: "7894516",
+    emailId: "798@gmail.com",
+    SSN: "123-45-6789",
+    country: "CA"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\customers\(customerId):api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="customerId">attributes.uriParams.customerId</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    customerId: 1000,
+    firstName: "Gopichand",
+    lastName: "Karnati",
+    phoneNumber: "2037894654",
+    emailId: "gopik0173@gmail.com",
+    SSN: "123-45-6789",
+    country: "US"
+  }, 
+  {
+    customerId: 2000,
+    firstName: "asdf",
+    lastName: "fghj",
+    phoneNumber: "7894516",
+    emailId: "798@gmail.com",
+    SSN: "123-45-6789",
+    country: "CA"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\customers:api-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    customerId: 1000,
+    firstName: "Gopichand",
+    lastName: "Karnati",
+    phoneNumber: "2037894654",
+    emailId: "gopik0173@gmail.com",
+    SSN: "123-45-6789",
+    country: "US"
+  }, 
+  {
+    customerId: 2000,
+    firstName: "asdf",
+    lastName: "fghj",
+    phoneNumber: "7894516",
+    emailId: "798@gmail.com",
+    SSN: "123-45-6789",
+    country: "CA"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
 </mule>
