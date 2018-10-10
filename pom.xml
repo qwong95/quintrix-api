@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.mycompany</groupId>
+	<groupId>3560a196-6c9d-4258-a8f3-4732b370284c</groupId>
 	<artifactId>quintrix-customer-api</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>mule-application</packaging>
 
 	<name>quintrix-customer-api</name>
@@ -31,6 +31,7 @@
                             <artifactId>mysql-connector-java</artifactId>
                         </sharedLibrary>
                     </sharedLibraries>
+                <classifier>mule-application-example</classifier>
                 </configuration>
 			</plugin>
 		</plugins>
