@@ -1,99 +1,99 @@
 #%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/e1db9ebf-2c3e-4256-88ee-8515515b081c # 
 title: Quintrix Customer API
-description: Executes CRUD operations on Customer Table
+description: Executes CRUD Operations on Customer Table
 version: v1
 protocols: 
+  - HTTPS 
   - HTTP
-  - HTTPS
 mediaType: application/json
-baseUri: https://mocksvc.mulesoft.com/mocks/ea79df29-ed05-49d9-a529-32fcc511661d/api/ # baseUri: https://mocksvc.mulesoft.com/mocks/8563fdfc-4a0a-4f7a-8011-36036a7ce8c5/api/
+
 types: 
-  customer: !include customer.raml
-  error: !include error.raml
-  customerPost: !include customerPost.raml
-  customerDelete: !include customerDelete.raml
-
+  customer : !include dataTypes/customer.raml
+  error: !include dataTypes/error.raml
 /customers:
-
- post:
-  description:  Create or update customers in database
-  
-  responses:      
-   200: 
-      
-       body: 
-        application/json:
-         type: array
-         items: 
-          type: customer
-         example: !include Examples/customers.raml
-
-   204:
-     description: Unable to create/insert the customer record
-     body: 
-      example: []
-   400:
-      body:
-       application/json:
-         schema: error
-         example: !include Examples/error_example.raml
-
- get:
-   description: Retreive all customer records
-   queryParameters: 
-     phoneNumber:
-      type: string
-      required: false
-
-   responses: 
-     200: 
-      body: 
-        application/json:
-         type: array
-         items: 
-          type: customer
-         example: !include Examples/customers.raml
-     204:
-      description: When no customer is found
-      body: 
-        example: []
-     400:
-      body:
-       application/json:
-         schema: error
-         example: !include Examples/error_example.raml
-
- /{customerId}:
-  uriParameters: 
-    customerId:
-     required: true
-     type: integer
-  delete:
-   responses: 
-     200:
-      body:
-       application/json:
-        schema: customerDelete
-        example: !include Examples/deleteResult.raml
-     400:
-      body:
-       example: !include error.raml
-
+  post:
+    description: This endpoint inserts all the records sent in the request body.
+    body: 
+      application/json:
+        type: array
+        items: 
+          type : customer
+        example: !include examples/customers.raml
+    responses: 
+      201:
+        description: All Customers has been created
+        body: 
+          type : nil
+      400:
+        description: Error Message
+        body: 
+          application/json:
+            schema: error
+            example: !include examples/error.raml
   get:
-   responses: 
-    200:
-     body: 
-        application/json:
-         type: array
-         items: 
-          type: customer
-         example: !include Examples/customer_example.raml
-    204:
-     body:
-      schema: nil
-    400:
-     description: 
-     body: 
-       application/json:
-         schema: error
-         example: !include Examples/error_example.raml
+    description: Retrieves all the customer records present in the database table
+    queryParameters: 
+      country:
+        required: false
+        enum: 
+          - US
+          - CA
+          - UK
+          - TW
+          - CN
+          - JP
+          - SK
+          - MX
+    responses: 
+      200:
+        body: 
+          application/json:
+            type: array
+            items: 
+              type : customer
+            example: !include examples/customers.raml
+      204:
+        description: No customers are available
+        body: 
+          application/json:
+            example: []
+      400:
+        description: Error Message
+        body: 
+          application/json:
+            schema: error
+            example: !include examples/error.raml
+  /{customerId}:
+    uriParameters: 
+      customerId: 
+        description: Unique ID for each customer
+        required: true
+        type: integer
+    delete:
+      responses: 
+        200:
+          body:
+            type : nil
+        400:
+          description: 
+          body: 
+            application/json:
+              schema: error
+              example: !include examples/error.raml
+    get:
+      responses: 
+        200:
+          body: 
+            application/json:
+              schema: customer
+              example: !include examples/customer.raml
+        204:
+          body: 
+            schema: nil
+        400:
+          description: 
+          body: 
+            application/json:
+              schema: error
+              example: !include examples/error.raml

@@ -4,7 +4,7 @@
 
 	<groupId>3560a196-6c9d-4258-a8f3-4732b370284c</groupId>
 	<artifactId>quintrix-customer-api</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
     <packaging>mule-application</packaging>
 
 	<name>quintrix-customer-api</name>
