@@ -6,7 +6,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
     <http:listener-config name="quintrix-customer-api-httpListenerConfig">
-        <http:listener-connection host="${http.host}" port="${http.port}" />
+        <http:listener-connection host="${secure::http.host}" port="${secure::http.port}" />
     </http:listener-config>
     <apikit:config name="quintrix-customer-api-config" raml="quintrix-customer-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" >
 		<apikit:flow-mappings >
@@ -18,12 +18,16 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	</apikit:config>
 	
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="c1c64454-dc4e-482e-ad5a-4b922b6e4535" >
-		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
+		<db:my-sql-connection host="${secure::db.host}" port="${secure::db.port}" user="${secure::db.user}" password="${secure::db.password}" database="${secure::db.database}" />
 	</db:config>
 	
 
-	<configuration-properties doc:name="Configuration properties" doc:id="bae9ce53-4fd4-41b8-b02d-f78b9bea7aeb" file="customer-${env}.yaml" />
-	<api-gateway:autodiscovery apiId="15551638" doc:name="API Autodiscovery" doc:id="2e324478-848d-4fc1-8df4-cbf9101db059" flowRef="quintrix-customer-api-main" />
+<!-- 	<configuration-properties doc:name="Configuration properties" doc:id="bae9ce53-4fd4-41b8-b02d-f78b9bea7aeb" file="customer-${env}.yaml" /> -->
+	
+<!-- 	<api-gateway:autodiscovery apiId="15550772" doc:name="API Autodiscovery" doc:id="ed3f32ca-cfbc-4f1a-9760-ba7ef533de80" flowRef="quintrix-customer-api-main" /> -->
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="afca8a69-f21e-43a7-8500-e3342009178f" file="customer-${env}.yaml" key="${key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
 	<flow name="quintrix-customer-api-main">
         <http:listener config-ref="quintrix-customer-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -63,7 +67,7 @@ output application/json
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="3c1de85b-7a84-46f7-8816-6c34558041a5">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -71,12 +75,12 @@ output application/json
 {message: "Method not allowed"}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="1a704808-f398-4e77-83cc-1560d7adc980">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -84,12 +88,12 @@ output application/json
 {message: "Not acceptable"}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="1a242877-5cbb-4c99-a056-13cf37bf8e2b">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -97,12 +101,12 @@ output application/json
 {message: "Unsupported media type"}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="ac25323d-b654-4a11-9105-30fb4b9d0856">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -110,7 +114,7 @@ output application/json
 {message: "Not Implemented"}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
@@ -146,7 +150,7 @@ output application/json
     <flow name="deleteCustomerByIdFlow">
        <logger level="INFO" doc:name="Logger" doc:id="335ef6d2-e969-434d-b9ec-091e66a19c57" message="Delete one customer"/>
 		<db:delete doc:name="Delete" doc:id="598ff80f-eacf-4815-81ef-4302f56add09" config-ref="Database_Config">
-			<db:sql >DELETE FROM training_qw.customer WHERE customer_id = :id;</db:sql>
+			<db:sql >DELETE FROM training.customer WHERE customer_id = :id;</db:sql>
 			<db:input-parameters ><![CDATA[#[{
     id: attributes.uriParams.customerId
 }]
@@ -165,7 +169,7 @@ output application/json
     </flow>
     <flow name="getCustomersFlow">
         <db:select doc:name="Select" doc:id="b8bf163e-b4bd-4705-9799-79bee171f2f1" config-ref="Database_Config" queryTimeout="30" fetchSize="1000" maxRows="5000">
-			<db:sql >SELECT * FROM training_qw.customer;</db:sql>
+			<db:sql >SELECT * FROM training.customer;</db:sql>
 		</db:select>
 		<ee:transform doc:name="Transform Message" doc:id="a1b0f76f-0711-4c37-8ba9-ceeeb2aac1ce" >
 			<ee:message >
@@ -186,7 +190,7 @@ payload map ( payload01 , indexOfPayload01 ) -> {
     <flow name="getCustomerByIDFlow">
         <logger level="INFO" doc:name="Logger" doc:id="9332e477-efe0-4a60-bf90-edc1729a40b1" message="Get one customer" />
 		<db:select doc:name="Select" doc:id="76df660f-efd1-47d4-8e9d-857700101fb5" config-ref="Database_Config" >
-			<db:sql >SELECT * FROM training_qw.customer WHERE customer_id = :id;</db:sql>
+			<db:sql >SELECT * FROM training.customer WHERE customer_id = :id;</db:sql>
 			<db:input-parameters ><![CDATA[#[{
     id: attributes.uriParams.customerId
 }]
@@ -219,7 +223,7 @@ output application/json
     emailId: $.emailId,
     ssn: $.SSN
 }]]]></db:bulk-input-parameters>
-			<db:sql >INSERT INTO training_qw.customer ( customer_id, customer_lastName, customer_firstName,customer_phoneNumber,customer_emailId,customer_SSN )
+			<db:sql >INSERT INTO training.customer ( customer_id, customer_lastName, customer_firstName,customer_phoneNumber,customer_emailId,customer_SSN )
    VALUES
    ( :id, :lastName, :firstName, :phoneNumber, :emailId, :ssn);
 </db:sql>
